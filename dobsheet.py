@@ -18,9 +18,10 @@ def render_day(year):
 def modify(day):
     ds= day.split("-")
     return str(f"{ds[2]}/{ds[1]}/{ds[0]}")
-
-filename = input(" Enter filename to save. : ")
-years = input(" Enter which year you want : ").split(",")
+    
+print("\n" + "Welcome To Dobsheet Manipulator")
+filename = input(" filename -> ")
+years = input(" years -> ").split(",")
 
 with open(filename,"w") as file:
     data=[]
