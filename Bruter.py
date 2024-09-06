@@ -61,6 +61,18 @@ def open_datasheet(path):
         for line in lines:  data.append(line.replace('\n',''))
         return data
         
+def save_result_file(Details):
+    
+    name = Details['name']
+    content = Details['content']
+    student = Details['id']
+    date = Details['date_of_brith']
+    
+    with open(f"result[{name}].txt","w") as file:
+        file.write(f" {student} || {date} "+"\n")
+        file.write(str(content) +"\n"+"\n")
+        file.close()
+        
 def leaf_year(year):
 
     if year%400 == 0:   leap = True
@@ -137,7 +149,9 @@ def students_dictionary_attack( collaction_of_roll_no, collaction_of_date_of_bri
             Details = result.copy().update({'id': studentID, 'date_of_brith':date_of_brith, 'total_count': total_count_of_squence_over_student, 'number_of_dates':number_of_dates, 'number_of_id': total_number_of_Id})
             result_screen(Details)
             
-            if Details['valid']:    break
+            if Details['valid']:
+                save_result_file(Details)
+                break
             
 def get_input():
     roll_no, date_of_brith=0,0
