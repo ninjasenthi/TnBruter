@@ -15,12 +15,12 @@ def process_package(package):
         return { 'valid': True, 'content': content, 'size': size, 'status': status, 'name': name}
 
 def result_screen(Details : dict):
-    
+    id, dob, number_of_id, number_of_dates, status, size = Details['id'], Details[date_of_brith], Details['number_of_id'], Details['number_of_dates'], Details['status'], Details['size']
     if Details['valid']:    validation = 'valid'
     else:   validation = 'invalid'
     
     print(f'-----' *100)
-    print(f'[req] :  {Details['id']} | {Details['date_of_brith]}  ({Details['number_of_id']}/{Details['number_of_dates]}) @!{Details['status']}  ^ ({Details['size']}kb)')
+    print(f'[req] :  {id} | {dob}  ({number_of_id}/{number_of_dates}) @!{status}  ^ ({size}kb)')
     print(f'     ')
     print(f'>>> Name          : ', Details['name'])
     print(f'>>> Student       : ', Details['id'])
