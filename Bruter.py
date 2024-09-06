@@ -152,7 +152,7 @@ def get_input():
         
     return roll_no, date_of_brith
     
-if __name__ = '__main__':
+if __name__ == '__main__':
 
     print('-----' *100)
     print('welcome')
