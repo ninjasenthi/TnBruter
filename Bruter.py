@@ -1,6 +1,7 @@
 from requests import post 
 from bs4 import BeautifulSoup 
 from datetime import datatime,timedelta
+from sys import argv
 
 def process_package(package):
     size = str(len(package.content)/1008)[0:4] + 'kb'
@@ -104,9 +105,9 @@ def dob_input_manager(text):
 	         for day in data:   dates.append(modify(day))
 	         return dates
 
-def register_no_input_manager(argv):
+def register_no_input_manager(text):
 
-    info = argv.split(",")
+    info = text.split(",")
     data=[]
     
     if str(info[0][-4:]) == '.txt':
@@ -142,8 +143,8 @@ def get_input():
     roll_no, date_of_brith=0,0
     
     if  len(sys.argv) >= 2:
-        roll_no = register_no_input_manager(sys.argv[1])
-        date_of_brith = dob_input_manager(sys.argv[2])
+        roll_no = register_no_input_manager(argv[1])
+        date_of_brith = dob_input_manager(argv[2])
     
     else:
         roll_no = register_no_input_manager(input("Regno -> "))
@@ -152,4 +153,10 @@ def get_input():
     return roll_no, date_of_brith
     
 if __name__ = '__main__':
-    pass
+
+    print('-----' *100)
+    print('welcome')
+    print('-----' *100, '\n')
+    
+    input = get_input
+    students_dictionary_attack(input)
