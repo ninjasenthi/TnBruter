@@ -1,10 +1,10 @@
-from requests import post 
+from requests import post, exceptions
 from bs4 import BeautifulSoup 
-from datetime import datetime,timedelta
+from datetime import datetime, timedelta
+from time import sleep
 from sys import argv
 
 Screen_size = 140
-
 
 
 def process_package(package):
@@ -90,8 +90,16 @@ def connection_send_package(roll_no : str , date_of_brith : str):
     'sec-ch-ua-platform':'"Android" '}
     
     payload = {'regno':roll_no, 'dob': date_of_brith, 'B1':'Get Marks'}
-    responce = post(url, headers=header, data=payload)
-    return responce
+
+    try:   
+        responce = post(url, headers=header, data=payload)
+        return responce
+
+    except exceptions:
+        sleep(5)
+        responce = connection_send_package(roll_no, date_of_brith)
+        return responce
+
 
 
 def students_dictionary_attack( collaction_of_rollno : list, collaction_of_date_of_brith : list):
