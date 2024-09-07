@@ -22,7 +22,7 @@ def result_screen(Details : dict):
     print(f'-----' *100)
     print(f'[req] :  {id} | {dob}  ({number_of_id}/{number_of_dates}) @!{status}  ^ ({size}kb)')
     print(f'     ')
-    print(f'>>> Name          : ', Details['name'])
+    if Details['valid']:	print(f'>>> Name          : ', Details['name'])
     print(f'>>> Student       : ', Details['id'])
     print(f'>>> DOB           : ', Details['date_of_brith'])
     print(f'>>> validation    : ', validation)
