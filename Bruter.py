@@ -14,6 +14,18 @@ def process_package(package):
     else:
         return { 'validation': True, 'content': content, 'size': size, 'status': status}
 
+def get_name_from_package(content):
+
+    lines = content.splitlines()
+    name = str(lines[6] + ')')
+    return name.replace('\xa0\xa0\xa0','')
+
+def remove_unicode(content):
+    content = content.replace("\xa0",'').replace("\t",'').replace("\r",'').split("\n\n\n")
+    for line in content:
+        final_output += str(line + "\n")
+    return final_output
+
 def result_screen(Details : dict):
     iD = Details['id']
     dob = Details['date_of_brith']
@@ -24,7 +36,7 @@ def result_screen(Details : dict):
 
     if Details['validation']:
         validation = 'valid'
-        name = Details['content'].splitlines()[5]
+        name = get_name_from_package(Details['content'])
     else:   validation = 'invalid'
     
     print(f'-----' *100)
@@ -39,13 +51,15 @@ def result_screen(Details : dict):
 
 def save_result_file(Details : dict):
 
-    content = Details['content']
+    content = remove_unicode(Details['content'])
     student = Details['id']
     date = Details['date_of_brith']
     
-    with open(f"result[{student}].txt","w") as file:
-        file.write(f" {student} || {date} "+"\n")
-        file.write(str(content) +"\n"+"\n")
+    name = get_name_from_package(Details['content'])
+
+    with open(f"result[{name}].txt","w") as file:
+        file.write( '-' *40, '\n', f" {student} || {date} "+"\n", '-' *40)
+        file.write(str(content))
         file.close()
 
 def connection_send_package(roll_no : str , date_of_brith : str):
