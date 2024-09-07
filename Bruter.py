@@ -1,6 +1,6 @@
 from requests import post 
 from bs4 import BeautifulSoup 
-from datetime import datatime,timedelta
+from datetime import datetime,timedelta
 from sys import argv
 
 def process_package(package):
@@ -29,8 +29,8 @@ def result_screen(Details : dict):
     print(f'>>> Total_count   : ', Details['total_count'])
     print(f'-----' *100)
 
-def connection_send_package(roll_no, date_of_brith):
-    url = 'https://tnresults.nic.in/wrfexrcd.asp' # CHECK URLPATH TO CORRECT SITE AATTACK
+def connection_send_package(roll_no : str , date_of_brith : str):
+    url = 'https://tnresults.nic.in/wrfexrcd.asp'
     header = {'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9, image/avif, image/webp,image/apng,*/*;q=0.8,application/signed-exchange; v=b3;q=0.7' ,
     'Accept-Encoding': 'gzip, deflate, br',
     'Accept-Language': 'en-IN, en-GB;q=0.9,en-US;q=0.8,en;q=0.7' ,
