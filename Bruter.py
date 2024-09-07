@@ -3,6 +3,9 @@ from bs4 import BeautifulSoup
 from datetime import datetime,timedelta
 from sys import argv
 
+Screen_size = 140
+
+
 
 def process_package(package):
     size = str( ( str(len(package.content)/1008)[0:4] + 'kb'))
@@ -22,8 +25,9 @@ def get_name_from_package(content):
 
 def remove_unicode(content):
     content = content.replace("\xa0",'').replace("\t",'').replace("\r",'').split("\n\n\n")
+    final_output=''
     for line in content:
-        final_output += str(line + "\n")
+        final_output += str("\n" + line + "\n")
     return final_output
 
 def result_screen(Details : dict):
@@ -39,7 +43,7 @@ def result_screen(Details : dict):
         name = get_name_from_package(Details['content'])
     else:   validation = 'invalid'
     
-    print(f'-----' *100)
+    print(f'-' *Screen_size)
     print(f'[req] :  {iD} | {dob}  ({count_id}/{count_dates}) @!{status}  ^ ({size}kb)')
     print(f'     ')
     if Details['validation']:	print(f'>>> Name          : ', name)
@@ -47,7 +51,7 @@ def result_screen(Details : dict):
     print(f'>>> DOB           : ', dob)
     print(f'>>> validation    : ', validation)
     print(f'>>> Total_count   : ', Details['countered_connection'])
-    print(f'-----' *100)
+    print(f'-' *Screen_size)
 
 def save_result_file(Details : dict):
 
@@ -58,7 +62,9 @@ def save_result_file(Details : dict):
     name = get_name_from_package(Details['content'])
 
     with open(f"result[{name}].txt","w") as file:
-        file.write( '-' *40, '\n', f" {student} || {date} "+"\n", '-' *40)
+        file.write("-" *40)
+        file.write(f" {student} || {date} ")
+        file.write("-" *40)
         file.write(str(content))
         file.close()
 
