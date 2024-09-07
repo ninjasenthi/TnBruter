@@ -93,8 +93,7 @@ def students_dictionary_attack( collaction_of_rollno : list, collaction_of_date_
 		
             Details = result.copy()
             Details.update({'id': studentId, 'date_of_brith':date_of_brith,'countered_of_id':countered_of_id, 'countered_of_dates':countered_of_dates,'countered_connection': countered_connection})
-            
-		result_screen(Details)
+            result_screen(Details)
             
             if Details['validation']:
                 save_result_file(Details)
