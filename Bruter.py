@@ -44,7 +44,7 @@ def result_screen(Details : dict):
     else:   validation = 'invalid'
     
     print(f'-' *Screen_size)
-    print(f'[req] :  {iD} | {dob}  ({count_id}/{count_dates}) @!{status}  ^ ({size}kb)')
+    print(f'[req] :  {iD} | {dob}  ({count_id}/{count_dates}) @!{status}  ^ ({size})')
     print(f'     ')
     if Details['validation']:	print(f'>>> Name          : ', name)
     print(f'>>> Student       : ', iD)
